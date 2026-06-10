@@ -1,13 +1,10 @@
-import { Link } from "react-router-dom";
 
+import Header from "../components/Header";
 function CartPage() {
   return (
-    <div>
-      <h1>Cart Page</h1>
-
-      <Link to="/">
-        <button>Back To Home</button>
-      </Link>
+    <div style={{ padding: "20px" }}>
+      <Header cart={[]} handleLogout={() => {}} />
+     
     </div>
   );
 }

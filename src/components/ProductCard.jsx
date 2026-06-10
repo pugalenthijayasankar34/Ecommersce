@@ -23,17 +23,7 @@ function ProductCard({ product, addToCart, showDetails }) {
       {/* PRICE */}
 
       <p>₹{product.price}</p>
-
-      {/* BUTTONS */}
-
-      <div className="status-box">
-        <button className="available-btn">Available</button>
-
-        <button className="add-btn" onClick={() => addToCart(product)}>
-          Add To Cart
-        </button>
       </div>
-    </div>
   );
 }
 

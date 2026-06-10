@@ -1,29 +1,51 @@
 import React, { useState } from "react";
+import CartIcon from "@iconify-react/mdi-light/cart";
+import { useNavigate } from "react-router-dom";
+import ProfileThinIcon from "@iconify-react/iconamoon/profile-thin";
+import SearchIcon from "@iconify-react/material-symbols-light/search";
+import LogoutIcon from "@iconify-react/mdi-light/logout";
 
-function Header({ cart, setShowCart, search, setSearch, handleLogout }) {
+function Header({ cart, search, setSearch, handleLogout }) {
   const [showAdmin, setShowAdmin] = useState(false);
   const [popup, setPopup] = useState("");
+  const navigate = useNavigate();
 
   return (
     <>
       <div className="header">
-        <h1>Cars Store Room</h1>
+        {/* LOGO */}
+        <h1 className="logo">Cars Store Room</h1>
 
-        <div className="header-menu">
-          <button className="home-btn">Home</button>
+        {/* SEARCH */}
+        <div className="search-container">
+          <span className="search-icon">
+            <SearchIcon height="1.5em" />
+          </span>
 
+          <input
+            className="search-input"
+            type="text"
+            placeholder="Search for Products, Brands and More"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
+        {/* RIGHT SIDE */}
+        <div className="header-right">
           <div className="dropdown">
             <button
               className="profile-btn"
               onClick={() => setShowAdmin(!showAdmin)}
             >
-              👤
+              <ProfileThinIcon height="1em" />
             </button>
 
             {showAdmin && (
               <div className="dropdown-content">
                 <button onClick={() => setPopup("profile")}>
-                  👤 My Profile
+                  <ProfileThinIcon height="1em" />
+                  My Profile
                 </button>
 
                 <button onClick={() => setPopup("orders")}>📦 Orders</button>
@@ -34,26 +56,22 @@ function Header({ cart, setShowCart, search, setSearch, handleLogout }) {
                   🛒 Products
                 </button>
 
-                <button onClick={handleLogout}>🚪 Logout</button>
+                <button onClick={handleLogout}>
+                  <LogoutIcon height="1em" />
+                  Logout
+                </button>
               </div>
             )}
           </div>
 
-          <input
-            type="text"
-            placeholder="search..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-
-          <button className="cart-btn" onClick={() => setShowCart(true)}>
-            Cart ({cart.length})
+          <button className="cart-btn" onClick={() => navigate("/cart")}>
+            <CartIcon height="24" />
+            <span>({cart.length})</span>
           </button>
         </div>
       </div>
 
       {/* POPUP */}
-
       {popup && (
         <div className="popup-overlay">
           <div className="popup-box">

@@ -18,7 +18,7 @@ function Home() {
 
   const [cart, setCart] = useState([]);
 
-  const [showCart, setShowCart] = useState(false);
+  
   const handleLogout = () => {
     localStorage.removeItem("token");
 
@@ -81,7 +81,7 @@ function Home() {
     <div>
       {/* HEADER */}
 
-      <Header cart={cart} setShowCart={setShowCart} handleLogout={handleLogout} />
+      <Header cart={cart} handleLogout={handleLogout} />
 
       {/* LOADING */}
 
@@ -125,45 +125,24 @@ function Home() {
           <p>{selectedProduct.description}</p>
 
           <h4>Category : {selectedProduct.category}</h4>
-
+<div className="button-group">
           <button
             className="close-btn"
             onClick={() => setSelectedProduct(null)}
           >
             Close
           </button>
+          <button
+            className="add-cart-btn"
+            onClick={() => addToCart(selectedProduct)}
+          >
+            🛒 Add To Cart
+          </button>
+        </div>
         </div>
       )}
 
       {/* CART */}
-
-      {showCart && (
-        <div className="cart-page">
-          <div className="cart-top">
-            <h1>My Cart</h1>
-
-            <button className="close-btn" onClick={() => setShowCart(false)}>
-              X
-            </button>
-          </div>
-
-          {cart.length === 0 ? (
-            <h2>No Products Added</h2>
-          ) : (
-            cart.map((item, index) => (
-              <div className="cart-item" key={index}>
-                <img src={item.image} alt={item.title} />
-
-                <div>
-                  <h3>{item.title}</h3>
-
-                  <p>₹{item.price}</p>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      )}
     </div>
   );
 }
