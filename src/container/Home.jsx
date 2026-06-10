@@ -7,14 +7,13 @@ import { useNavigate } from "react-router-dom";
 
 import LoaderIcon from "@iconify-react/codex/loader";
 
-import { getProducts, getsingleProduct } from "../services/ProductService";
+import { getProducts } from "../services/ProductService";
 
 function Home() {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const [cart, setCart] = useState([]);
 
@@ -51,22 +50,8 @@ function Home() {
 
   /* SINGLE PRODUCT */
 
-  const showDetails = async (id) => {
-    setLoading(true);
-
-    try {
-      const data = await getsingleProduct(id);
-
-      console.log(data, "SINGLE PRODUCT");
-
-      console.log(`https://fakestoreapi.com/products/${id}`);
-
-      setSelectedProduct(data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
+  const showDetails = (id) => {
+    navigate(`/product/${id}`);
   };
 
   /* ADD TO CART */
@@ -81,7 +66,11 @@ function Home() {
     <div>
       {/* HEADER */}
 
-      <Header cart={cart} handleLogout={handleLogout} />
+      <Header
+        cart={cart}
+        handleLogout={handleLogout}
+        goToCart={() => navigate("/cart", { state: { cart } })}
+      />
 
       {/* LOADING */}
 
@@ -111,38 +100,6 @@ function Home() {
           ))}
         </div>
       )}
-
-      {/* PRODUCT DETAILS */}
-
-      {selectedProduct && (
-        <div className="details-box">
-          <img src={selectedProduct.image} alt={selectedProduct.title} />
-
-          <h2>{selectedProduct.title}</h2>
-
-          <h3>₹{selectedProduct.price}</h3>
-
-          <p>{selectedProduct.description}</p>
-
-          <h4>Category : {selectedProduct.category}</h4>
-<div className="button-group">
-          <button
-            className="close-btn"
-            onClick={() => setSelectedProduct(null)}
-          >
-            Close
-          </button>
-          <button
-            className="add-cart-btn"
-            onClick={() => addToCart(selectedProduct)}
-          >
-            🛒 Add To Cart
-          </button>
-        </div>
-        </div>
-      )}
-
-      {/* CART */}
     </div>
   );
 }

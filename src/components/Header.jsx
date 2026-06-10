@@ -5,7 +5,7 @@ import ProfileThinIcon from "@iconify-react/iconamoon/profile-thin";
 import SearchIcon from "@iconify-react/material-symbols-light/search";
 import LogoutIcon from "@iconify-react/mdi-light/logout";
 
-function Header({ cart, search, setSearch, handleLogout }) {
+function Header({ cart, search, setSearch, handleLogout, goToCart }) {
   const [showAdmin, setShowAdmin] = useState(false);
   const [popup, setPopup] = useState("");
   const navigate = useNavigate();
@@ -64,7 +64,7 @@ function Header({ cart, search, setSearch, handleLogout }) {
             )}
           </div>
 
-          <button className="cart-btn" onClick={() => navigate("/cart")}>
+          <button className="cart-btn" onClick={goToCart}>
             <CartIcon height="24" />
             <span>({cart.length})</span>
           </button>
