@@ -1,15 +1,16 @@
 import React, { useState } from "react";
-import axios from "axios";
 import Loginimage from "../image/Login.jpg";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { loginUser } from "../features/auth/authSlice";
+
+import { setUser } from "../features/auth/authSlice";
+import { supabase } from "../services/supabase";
 
 function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const [loading, setLoading] = useState(false);
@@ -22,32 +23,54 @@ function Login() {
     setError("");
 
     try {
-      const response = await axios.post("https://dummyjson.com/auth/login", {
-        username,
+      // Supabase Login
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
         password,
       });
 
-      console.log(response.data, "LOGIN SUCCESS");
+      if (error) {
+        throw error;
+      }
 
-      localStorage.setItem(
-        "token",
-        response.data.accessToken || response.data.token,
-      );
+      console.log(data, "LOGIN SUCCESS");
 
+      // Save Token
+      localStorage.setItem("token", data.session.access_token);
+
+      // Save User
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      // Redux Save
       dispatch(
-        loginUser({
-          username,
-          password,
+        setUser({
+          id: data.user.id,
+          email: data.user.email,
         }),
       );
 
-      navigate("/home");
+      // Get User Role
+      const { data: roleData, error: roleError } = await supabase
+        .from("users")
+        .select("role")
+        .eq("id", data.user.id)
+        .single();
+
+      if (roleError) {
+        console.log(roleError);
+      }
+
+    
+      // Navigate Based On Role
+      if (roleData?.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/home");
+      }
     } catch (error) {
       console.log(error);
 
-      setError("Invalid Username or Password");
-
-      alert("Invalid Login");
+      setError(error.message || "Invalid Email or Password");
     } finally {
       setLoading(false);
     }
@@ -57,7 +80,6 @@ function Login() {
     <div className="login-page">
       <div className="login-card">
         {/* LEFT SIDE */}
-
         <div className="login-left">
           <h1>
             Hello,
@@ -69,10 +91,11 @@ function Login() {
 
           <form onSubmit={handleLogin}>
             <input
-              type="text"
-              placeholder="Enter Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              type="email"
+              placeholder="Enter Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
 
             <input
@@ -80,26 +103,18 @@ function Login() {
               placeholder="Enter Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
             />
 
             {error && <p className="error">{error}</p>}
 
-            <button type="submit">{loading ? "Loading..." : "Sign In"}</button>
+            <button type="submit" disabled={loading}>
+              {loading ? "Loading..." : "Sign In"}
+            </button>
           </form>
-
-          <div className="demo-login">
-            <p>
-              <b>Username :</b> emilys
-            </p>
-
-            <p>
-              <b>Password :</b> emilyspass
-            </p>
-          </div>
         </div>
 
         {/* RIGHT SIDE */}
-
         <div className="login-right">
           <img src={Loginimage} alt="login" className="login-image" />
         </div>

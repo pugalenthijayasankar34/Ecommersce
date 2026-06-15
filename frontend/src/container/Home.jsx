@@ -1,32 +1,34 @@
 import React, { useEffect, useState } from "react";
-
 import ProductCard from "../components/ProductCard";
-
 import Header from "../components/Header";
 import { useNavigate } from "react-router-dom";
-
 import LoaderIcon from "@iconify-react/codex/loader";
 
 import { getProducts } from "../services/ProductService";
-import { supabase } from "../supabase";
+import { supabase } from "../services/supabase";
+
 function Home() {
-  const [products, setProducts] = useState([]);
   const navigate = useNavigate();
+
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const [cart, setCart] = useState(
+    JSON.parse(localStorage.getItem("cart")) || [],
+  );
 
-  const [cart, setCart] = useState([]);
-
-  
+  // Logout
   const handleLogout = () => {
     localStorage.removeItem("token");
-
-    console.log("REMOVE");
+    localStorage.removeItem("user");
 
     navigate("/");
   };
+
+  // Check Supabase Connection
   useEffect(() => {
     checkConnection();
+    fetchProducts();
   }, []);
 
   const checkConnection = async () => {
@@ -40,12 +42,7 @@ function Home() {
     }
   };
 
-  /* GET ALL PRODUCTS */
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
+  // Get Products
   const fetchProducts = async () => {
     setLoading(true);
 
@@ -56,38 +53,40 @@ function Home() {
 
       setProducts(data);
     } catch (error) {
-      console.log(error);
+      console.log("Fetch Products Error:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  /* SINGLE PRODUCT */
-
+  // Product Details
   const showDetails = (id) => {
     navigate(`/product/${id}`);
   };
 
-  /* ADD TO CART */
-
+  // Add To Cart
   const addToCart = (product) => {
-    setCart((prev) => [...prev, product]);
+    const updatedCart = [...cart, product];
 
-    console.log(product, "ADDED TO CART");
+    setCart(updatedCart);
+
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+
+    alert("Product Added To Cart");
   };
 
   return (
     <div>
-      {/* HEADER */}
-
+      {/* Header */}
       <Header
         cart={cart}
         handleLogout={handleLogout}
-        goToCart={() => navigate("/cart", { state: { cart } })}
+        search=""
+        setSearch={() => {}}
+        goToCart={() => navigate("/cart")}
       />
 
-      {/* LOADING */}
-
+      {/* Loader */}
       {loading ? (
         <div
           style={{
@@ -100,18 +99,22 @@ function Home() {
         >
           <LoaderIcon height="6em" />
 
-          <h2>Loading Product...</h2>
+          <h2>Loading Products...</h2>
         </div>
       ) : (
         <div className="product-container">
-          {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              addToCart={addToCart}
-              showDetails={showDetails}
-            />
-          ))}
+          {products.length > 0 ? (
+            products.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                addToCart={addToCart}
+                showDetails={showDetails}
+              />
+            ))
+          ) : (
+            <h2 style={{ textAlign: "center" }}>No Products Found</h2>
+          )}
         </div>
       )}
     </div>
