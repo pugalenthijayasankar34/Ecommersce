@@ -38,12 +38,12 @@ function ProductDetails() {
 
    setCart(updatedCart);
 
-   alert("Product Added To Cart");
+
  };
 
   // BUY NOW
   const buyNow = () => {
-    alert("Proceeding to Checkout...");
+
 
     // navigate("/checkout");
   };

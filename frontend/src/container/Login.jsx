@@ -3,8 +3,8 @@ import Loginimage from "../image/Login.jpg";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
-import { setUser } from "../features/auth/authSlice";
-import { supabase } from "../services/supabase";
+import { setUser } from "../features/auth/AuthSlice";
+import { supabase } from "../services/Supabase";
 
 function Login() {
   const navigate = useNavigate();
@@ -23,7 +23,6 @@ function Login() {
     setError("");
 
     try {
-      // Supabase Login
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -35,13 +34,10 @@ function Login() {
 
       console.log(data, "LOGIN SUCCESS");
 
-      // Save Token
       localStorage.setItem("token", data.session.access_token);
 
-      // Save User
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // Redux Save
       dispatch(
         setUser({
           id: data.user.id,
@@ -49,24 +45,15 @@ function Login() {
         }),
       );
 
-      // Get User Role
-      const { data: roleData, error: roleError } = await supabase
-        .from("users")
-        .select("role")
-        .eq("id", data.user.id)
-        .single();
-
-      if (roleError) {
-        console.log(roleError);
-      }
-
-    
-      // Navigate Based On Role
-      if (roleData?.role === "admin") {
-        navigate("/admin");
-      } else {
+      // Login success → Direct Admin Page
+      // Check User Role
+      if (data.user.email === "admin@gmail.com") {
+        localStorage.setItem("role", "admin");
         navigate("/home");
-      }
+      } else {
+        localStorage.setItem("role", "user");
+        navigate("/home");
+      } 
     } catch (error) {
       console.log(error);
 
@@ -79,7 +66,6 @@ function Login() {
   return (
     <div className="login-page">
       <div className="login-card">
-        {/* LEFT SIDE */}
         <div className="login-left">
           <h1>
             Hello,
@@ -114,7 +100,6 @@ function Login() {
           </form>
         </div>
 
-        {/* RIGHT SIDE */}
         <div className="login-right">
           <img src={Loginimage} alt="login" className="login-image" />
         </div>

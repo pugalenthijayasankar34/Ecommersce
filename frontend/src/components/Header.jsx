@@ -4,12 +4,20 @@ import { useNavigate } from "react-router-dom";
 import ProfileThinIcon from "@iconify-react/iconamoon/profile-thin";
 import SearchIcon from "@iconify-react/material-symbols-light/search";
 import LogoutIcon from "@iconify-react/mdi-light/logout";
+import AddRoundedIcon from "@iconify-react/material-symbols/add-rounded";
 
-function Header({ cart, search, setSearch, handleLogout, goToCart }) {
+function Header({
+  cart = [],
+  search = "",
+  setSearch = () => {},
+  handleLogout,
+  goToCart,
+}) {
   const [showAdmin, setShowAdmin] = useState(false);
   const [popup, setPopup] = useState("");
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
+const role = localStorage.getItem("role");
   return (
     <>
       <div className="header">
@@ -33,6 +41,17 @@ function Header({ cart, search, setSearch, handleLogout, goToCart }) {
 
         {/* RIGHT SIDE */}
         <div className="header-right">
+          {/* HOME */}
+          {role === "admin" && (
+            <button
+              className="add-product-btn"
+              onClick={() => navigate("/admin")}
+            >
+              <AddRoundedIcon height="2em" />
+            </button>
+          )}
+
+          {/* PROFILE */}
           <div className="dropdown">
             <button
               className="profile-btn"
@@ -43,12 +62,10 @@ function Header({ cart, search, setSearch, handleLogout, goToCart }) {
 
             {showAdmin && (
               <div className="dropdown-content">
-                <button onClick={() => setPopup("profile")}>
+                <button onClick={() => navigate("/admin")}>
                   <ProfileThinIcon height="1em" />
                   My Profile
                 </button>
-
-                <button onClick={() => setPopup("orders")}>📦 Orders</button>
 
                 <button onClick={() => setPopup("users")}>👥 Users</button>
 
@@ -64,6 +81,7 @@ function Header({ cart, search, setSearch, handleLogout, goToCart }) {
             )}
           </div>
 
+          {/* CART */}
           <button className="cart-btn" onClick={goToCart}>
             <CartIcon height="24" />
             <span>({cart.length})</span>
@@ -71,44 +89,33 @@ function Header({ cart, search, setSearch, handleLogout, goToCart }) {
         </div>
       </div>
 
-      {/* POPUP */}
-      {popup && (
+      {/* POPUPS */}
+      {popup === "orders" && (
         <div className="popup-overlay">
           <div className="popup-box">
-            {popup === "profile" && (
-              <>
-                <h2>👤 My Profile</h2>
-                <p>Name : Admin User</p>
-                <p>Email : admin@gmail.com</p>
-                <p>Role : Admin</p>
-              </>
-            )}
+            <h2>📦 Orders</h2>
+            <p>Total Orders: 12</p>
+            <button onClick={() => setPopup("")}>Close</button>
+          </div>
+        </div>
+      )}
 
-            {popup === "orders" && (
-              <>
-                <h2>📦 Orders</h2>
-                <p>Total Orders : 12</p>
-                <p>Pending Orders : 2</p>
-              </>
-            )}
+      {popup === "users" && (
+        <div className="popup-overlay">
+          <div className="popup-box">
+            <h2>👥 Users</h2>
+            <p>Total Users: 150</p>
+            <button onClick={() => setPopup("")}>Close</button>
+          </div>
+        </div>
+      )}
 
-            {popup === "users" && (
-              <>
-                <h2>👥 Users</h2>
-                <p>Total Users : 150</p>
-              </>
-            )}
-
-            {popup === "products" && (
-              <>
-                <h2>🛒 Products</h2>
-                <p>Total Products : 50</p>
-              </>
-            )}
-
-            <button className="close-btn" onClick={() => setPopup("")}>
-              Close
-            </button>
+      {popup === "products" && (
+        <div className="popup-overlay">
+          <div className="popup-box">
+            <h2>🛒 Products</h2>
+            <p>Total Products Available</p>
+            <button onClick={() => setPopup("")}>Close</button>
           </div>
         </div>
       )}

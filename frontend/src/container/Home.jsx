@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import LoaderIcon from "@iconify-react/codex/loader";
 
 import { getProducts } from "../services/ProductService";
-import { supabase } from "../services/supabase";
+import { supabase } from "../services/Supabase";
 
 function Home() {
   const navigate = useNavigate();
@@ -71,8 +71,6 @@ function Home() {
     setCart(updatedCart);
 
     localStorage.setItem("cart", JSON.stringify(updatedCart));
-
-    alert("Product Added To Cart");
   };
 
   return (
